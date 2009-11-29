@@ -1,6 +1,8 @@
 require 'rake'
 require 'rake/testtask'
 require 'rake/rdoctask'
+require File.dirname(__FILE__) + '/../../../config/boot'
+require 'tasks/rails'
 
 desc 'Default: run unit tests.'
 task :default => :test

@@ -59,3 +59,29 @@ describe "ActiveRecord::Base" do
     end
   end
 end
+
+describe "ActiveRecord::AttributeMethods" do
+  before(:each) do
+    class AttrPrivateModel < ActiveRecord::Base
+      attr_private :private_attribute
+
+      def set_private(attribute)
+        self.private_attribute = attribute
+      end
+    end
+    @model = AttrPrivateModel.new
+  end
+
+  after(:each) do
+    Object.send(:remove_const,:AttrPrivateModel)
+  end
+
+  describe "Read" do
+    it "should raise a NoMethodError private method called when trying to access private attribute" do
+      @model.set_private("hello")
+      lambda { @model.private_attribute }.should raise_error(NoMethodError) do |error|
+        puts error
+      end
+    end
+  end
+end
