@@ -6,4 +6,4 @@ $:.unshift(lib) unless $:.include? lib
 
 
 require 'active_record_base'
-require 'active_record_attribute_methods'
+#require 'active_record_attribute_methods'

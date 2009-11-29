@@ -1,8 +1,8 @@
 class CreateTableAttrPrivateModels < ActiveRecord::Migration
   def self.up
    create_table :attr_private_models do |t|
-    t.string :private_attribute 
-    t.string :public_attr
+    t.string :_private_attribute 
+    t.string :public_attribute
    end
   end
 

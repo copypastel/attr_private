@@ -65,23 +65,74 @@ describe "ActiveRecord::AttributeMethods" do
     class AttrPrivateModel < ActiveRecord::Base
       attr_private :private_attribute
 
-      def set_private(attribute)
+      def set_private_attribute(attribute)
         self.private_attribute = attribute
+      end
+
+      def get_private_attribute
+        private_attribute
       end
     end
     @model = AttrPrivateModel.new
   end
 
   after(:each) do
+    AttrPrivateModel.all.each { |a| a.destroy }
     Object.send(:remove_const,:AttrPrivateModel)
   end
 
   describe "Read" do
     it "should raise a NoMethodError private method called when trying to access private attribute" do
-      @model.set_private("hello")
-      lambda { @model.private_attribute }.should raise_error(NoMethodError) do |error|
-        puts error
-      end
+      lambda { @model.private_attribute }.should raise_error(NoMethodError)
+    end
+
+    it "should not affect access of public methods" do
+      lambda { @model.public_attribute }.should_not raise_error(NoMethodError)
+    end
+  end
+
+  describe "Write" do
+    it "should raise a NoMethodError private method called when trying to set private attribute" do
+      lambda { @model.private_attribute = "attribute" }.should raise_error(NoMethodError)
+    end
+
+    it "should not affect writing of public methods" do
+      attribute = "hello"
+      lambda { @model.public_attribute = attribute }.should_not raise_error(NoMethodError)
+      @model.public_attribute = attribute
+      @model.public_attribute.should eql(attribute)
+    end
+
+    it "should allow writing within the class." do
+      attribute = "hello"
+      @model.set_private_attribute attribute
+      @model.get_private_attribute.should eql(attribute)
+    end
+  end
+
+  describe "Database" do
+    it "should not interfear with normal database operations" do
+      attribute = "hello"
+      @model.public_attribute = attribute
+      @model.save.should be(true)
+      model = AttrPrivateModel.find @model.id
+      @model.public_attribute.should eql(model.public_attribute) 
+    end
+
+    it "should save and retrieve a private attribute" do
+      attribute = "hello"
+      @model.set_private_attribute attribute
+      @model.save.should be(true)
+      model = AttrPrivateModel.find @model.id
+      @model.get_private_attribute.should eql(model.get_private_attribute)
+    end
+
+    it "should not be affected by mass updates" do
+      attribute = "hello"
+      @model.get_private_attribute.should be(nil)
+      @model.update_attributes!(:_private_attribute => attribute, :public_attribute => attribute)
+      @model.get_private_attribute.should be(nil)
+      @model.public_attribute.should eql(attribute)
     end
   end
 end

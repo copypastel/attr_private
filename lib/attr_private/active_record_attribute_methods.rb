@@ -1,5 +1,4 @@
 module ActiveRecord::AttributeMethods::ClassMethods
-  private
   def define_read_method(symbol,attr_name,column)
     cast_code = column.type_cast_code('v') if column
     access_code = cast_code ? "(v=@attributes['#{attr_name}']) && #{cast_code}" : "@attributes['#{attr_name}']"
@@ -14,10 +13,18 @@ module ActiveRecord::AttributeMethods::ClassMethods
     unless private_attributes.include?(attr_name)
       evaluate_attribute_method attr_name, "def #{symbol}; #{access_code}; end"
     else
-      method = "def #{symbol} 
-        raise NoMethodError
-      end"
+      method = "
+      def #{attr_name} 
+      end
+      private :#{attr_name}
+      "
       evaluate_attribute_method attr_name, method 
     end
   end
+
+  def define_write_method(attr_name)
+    method = "def #{attr_name}=(new_value);write_attribute('#{attr_name}', new_value);end; private :#{attr_name}"
+    evaluate_attribute_method attr_name, method, "#{attr_name}="
+  end
 end
+
