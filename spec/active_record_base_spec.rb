@@ -2,15 +2,16 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 
 describe "ActiveRecord::Base" do
-  describe "#attr_private" do
-    before(:each) do
-      class Model < ActiveRecord::Base
-      end
+  before(:each) do
+    class Model < ActiveRecord::Base
     end
+  end
 
-    after(:each) do
-      Object.send(:remove_const,:Model)
-    end
+  after(:each) do
+    Object.send(:remove_const,:Model)
+  end
+
+  describe "#attr_private" do
 
     it "should respond to #attr_private" do
       Model.should respond_to(:attr_private)
@@ -37,6 +38,24 @@ describe "ActiveRecord::Base" do
       Model.attr_private(:second_attr).should include('second_attr')
       Model.send(:read_inheritable_attribute,:attr_private).should include('second_attr')
       Model.send(:read_inheritable_attribute,:attr_private).should include('second_attr')
+      set = Model.attr_private(:third_attr,:fourth_attr)
+      set.should include('first_attr')
+      set.should include('second_attr')
+      set.should include('third_attr')
+      set.should include('fourth_attr')
+    end
+  end
+
+  describe "#private_attributes" do
+    it "should respond to #private_attributes" do
+      Model.should respond_to(:private_attributes)
+    end
+
+    it "should return a Set containing all private attributes added" do
+      Model.attr_private(:first_attr,:second_attr)
+      Model.private_attributes.class.should eql(Set)
+      Model.private_attributes.should include('first_attr')
+      Model.private_attributes.should include('second_attr')
     end
   end
 end
