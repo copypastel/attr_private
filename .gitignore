@@ -5,3 +5,4 @@
 *.log
 schema.rb
 seeds.rb
+lib/attr_private/active_record_attribute_methods.rb
