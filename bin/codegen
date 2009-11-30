@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby
+
+cgen_areas = nil
+
+text = ""
+File.open(File.dirname(__FILE__) + '/../lib/attr_private/active_record_attribute_methods_codegen_template.rb') do |f|
+  text = f.read
+  cgen_areas = text.scan(/=begin codegen.*?=end/m).inject({}) do |hash,area| 
+    key = eval area.slice!(/=begin codegen.*\n/).gsub(/=begin codegen/,'')
+    hash[key] = area.gsub(/=end/,'')
+    hash
+  end
+end
+
+cgen_areas.each do |command,data|
+  case command
+  when :auto_header
+    text.gsub!(/=begin codegen :auto_header.*?=end/m,data)
+  when :private_accessors
+    protected_methods = eval data
+    accessors = []
+    protected_methods.each do |method|
+      command = "find #{File.expand_path(File.dirname(__FILE__) + '/../../../rails')} -name \\* | xargs grep #{method}" 
+      accessors << %x[#{command}].split("\n").map { |i| i.split(':').first.split('/').last }.uniq
+    end
+    accessors.flatten!.uniq!
+    text.gsub!(/=begin codegen :private_accessors.*?=end/m,accessors.map{|m| "    '#{m}'"}.join(",\n"))
+  end
+end
+
+File.open(File.dirname(__FILE__) + '/../lib/attr_private/active_record_attribute_methods.rb','w') do |f|
+  f.write text
+end
+
