@@ -3,6 +3,8 @@ module ActiveRecord
     class << self
       def attr_private(*attributes)
         attributes.each do |a|
+          #TODO: Tried to put this in attribute_methods.rb but the private calls were ignored...
+          # In the future this should be moved there to match rails current style.
           self.class_eval(<<-EOS)
             attr_protected :_#{a}
             def #{a}()

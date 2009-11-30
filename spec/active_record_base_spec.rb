@@ -61,24 +61,16 @@ describe "ActiveRecord::Base" do
 end
 
 describe "ActiveRecord::AttributeMethods" do
+  before(:all) do
+   autoload :AttrPrivateModel, File.dirname(__FILE__) + '/models/attr_private_model' 
+  end
+  
   before(:each) do
-    class AttrPrivateModel < ActiveRecord::Base
-      attr_private :private_attribute
-
-      def set_private_attribute(attribute)
-        self.private_attribute = attribute
-      end
-
-      def get_private_attribute
-        private_attribute
-      end
-    end
     @model = AttrPrivateModel.new
   end
 
   after(:each) do
     AttrPrivateModel.all.each { |a| a.destroy }
-    Object.send(:remove_const,:AttrPrivateModel)
   end
 
   describe "Read" do
@@ -88,6 +80,12 @@ describe "ActiveRecord::AttributeMethods" do
 
     it "should not affect access of public methods" do
       lambda { @model.public_attribute }.should_not raise_error(NoMethodError)
+    end
+
+    it "should not be present in the #attributes call" do
+      pending
+      @model.attributes.should_not include('_private_attribute')
+      @model.attributes.should include('_private_attribute')
     end
   end
 
