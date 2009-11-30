@@ -4,4 +4,8 @@ lib = File.expand_path(File.dirname(__FILE__) + '/attr_private')
 $:.unshift(lib) unless $:.include? lib
 
 require 'active_record_base'
-require 'active_record_attribute_methods'
+unless require 'active_record_attribute_methods'
+  raise "Please run rake rails:freeze:edge VERSION=#\{verison}. 
+         Then run vendor/plugin/attr_accessor/bin/codegen.
+         See README for details about why this is nessisary."
+end
