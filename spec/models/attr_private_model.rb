@@ -12,5 +12,9 @@ class AttrPrivateModel < ActiveRecord::Base
   def get_attributes
     self.attributes
   end
+
+  def get_read_attribute(attr)
+    self.read_attribute(attr)
+  end
 end
 

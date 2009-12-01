@@ -89,7 +89,24 @@ describe "ActiveRecord::AttributeMethods" do
 
     it "should be present when using a class method to access #attributes" do
       @model.get_attributes.should include('private_attribute')
+      @model.get_attributes.should include('private_attribute')
     end
+
+    it "should return nil when trying to use #read_attribute with a private attribute" do
+      attribute = "hello"
+      @model.set_private_attribute(attribute)
+      @model.public_attribute = attribute
+      @model.read_attribute(:private_attribute).should be(nil)
+      @model.read_attribute(:public_attribute).should eql(attribute)
+    end 
+      
+
+    it "should return the value when trying to use #read_attribute from within the model" do
+      attribute = "hello"
+      @model.set_private_attribute(attribute)
+      @model.get_read_attribute(:private_attribute).should eql(attribute)
+    end
+      
   end
 
   describe "Write" do

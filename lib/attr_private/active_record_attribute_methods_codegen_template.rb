@@ -10,7 +10,7 @@ module ActiveRecord
       module_eval(<<-EOS)
         alias old_#{attr} #{attr}
         def #{attr}(*args)
-    #      #return nil if self.class.private_attributes.any? {|a| #{attr} == _#\:{a}} and not allow_private_access?
+          return nil if self.class.private_attributes.include?(args.first.to_s) and not allow_private_access?
           old_#{attr}(args)
         end
       EOS
