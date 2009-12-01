@@ -2,7 +2,7 @@ module ActiveRecord
   class Base
     class << self
       def attr_private(*attributes)
-        attr_protected(attributes)
+        attr_protected(*attributes)
         write_inheritable_attribute(:attr_private,Set.new(attributes.map { |a| a.to_s }) + (private_attributes || []))
       end
 

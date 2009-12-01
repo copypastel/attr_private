@@ -44,6 +44,14 @@ describe "ActiveRecord::Base" do
       set.should include('third_attr')
       set.should include('fourth_attr')
     end
+
+    it "should also make private attributes protected" do
+      Model.attr_private(:first_attr).should include('first_attr')
+      Model.protected_attributes.should include('first_attr')
+      Model.attr_private(:second_attr,:third_attr).should include('third_attr')
+      Model.protected_attributes.should include('second_attr')
+      Model.protected_attributes.should include('third_attr')
+    end
   end
 
   describe "#private_attributes" do
