@@ -16,6 +16,7 @@ The most obvious one would be to edit all of the attribute_methods accessors to 
 
 *pros*
 * Best solution and won't accidently break anything
+
 *cons*
 * Would take much more time then already spent
 * Not worth it unless people are really interested
@@ -27,6 +28,7 @@ This way is the simplest to implement but results in some ugly code and requires
 *pros*
 * Easiest to implement and doesn't seem that hackish
 * Gives real private functionality but still lets ActiveRecord modify the values
+
 *cons*
 * Without overiding all the accessors it is possible to view the private attributes from functions like attributes and read_attribute(:_field)
 * for some reason when using the setter you must use self.field =, and when using the getter you must use field.  field=, and self.field will produce errors.  I have not figured out why this is.
@@ -41,6 +43,7 @@ This way involves parsing the caller arguments to see if it is comming from a fi
 *pros*
 * Gets rid of the nececity for keeping track of _ methods.
 * Easy to restrict more functions without changing allot of code.
+
 *cons*
 * allow_private_access? is not verry robust.  Deciding if something deserves access is really figured out on a trial and error bases as tests are written.
 * adds allot of splits, on to each assignment operation that uses the allow_private_access.
@@ -70,5 +73,4 @@ model.private_attribute          # => NoMethodError, private method `private_att
 model.set_private_attribute('test') # => 'test'
 model.get_private_attirbute         # => 'test'
  
-p.
-Copyright (c) 2009 copypastel.com, released under the MIT license
+p. Copyright (c) 2009 copypastel.com, released under the MIT license
