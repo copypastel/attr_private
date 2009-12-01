@@ -24,5 +24,23 @@ module ActiveRecord
         read_inheritable_attribute(:attr_private)
       end
     end
+
+    alias old_attributes attributes
+    def attributes
+      attrs = old_attributes
+      self.class.private_attributes.each do |a|
+        attrs.reject! { |key,value| key == "_#{a}" }
+      end unless allow_private_access?
+      attrs
+    end
+    
+    def allow_private_access?
+      # Check to see if the second caller (because the first would be the method that called this function)
+      # was invoked from within the allowable PRIVATE_ACCESSORS list
+      file = caller(2).map { |c| c.split(':').first.split('/').last }.first
+      access = ActiveRecord::PRIVATE_ACCESSORS + ["#{self.class.name.to_s.underscore}.rb"]
+      access.include? file
+    end
+
   end
 end

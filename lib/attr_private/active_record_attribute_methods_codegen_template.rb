@@ -2,29 +2,25 @@
 # This is an Auto Generated File.
 # Please edit active_record_attribute_methods_codegen_template.rb to change the contents.
 =end
-module ActiveRecord::AttributeMethods
-  #TODO: Figure out how to get this next array into a variable that can be accesesd 
-  # via the codegen as well.
-  ['read_attribute','read_attribute_before_type_cast'].each do |attr|
-    module_eval(<<-EOS)
-      alias old_#{attr} #{attr}
-      def #{attr}(*args)
-        old_#{attr}(args) if allow_private_access?
-      end
-    EOS
+module ActiveRecord
+  module AttributeMethods
+    #TODO: Figure out how to get this next array into a variable that can be accesesd 
+    # via the codegen as well.
+    ['read_attribute','read_attribute_before_type_cast'].each do |attr|
+      module_eval(<<-EOS)
+        alias old_#{attr} #{attr}
+        def #{attr}(*args)
+    #      #return nil if self.class.private_attributes.any? {|a| #{attr} == _#\:{a}} and not allow_private_access?
+          old_#{attr}(args)
+        end
+      EOS
+    end
   end
 
-  private
-  PRIVATE_ACCESSORS = ["#{self.to_s.underscore}.rb",
+  PRIVATE_ACCESSORS = [
 =begin codegen :private_accessors
-  ['read_attribute', 'read_attribute_before_type_cast']
+  ['read_attribute', 'read_attribute_before_type_cast','attributes']
 =end
   ] 
-
-  def allow_private_access?
-    # Check to see if the second caller (because the first would be the method that called this function)
-    # was invoked from within the allowable PRIVATE_ACCESSORS list
-   file = caller(2).map { |c| c.split(':').first.split('/').last }.first
-   PRIVATE_ACCESSORS.include? file
-  end
+      
 end

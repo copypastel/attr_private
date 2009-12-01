@@ -83,9 +83,12 @@ describe "ActiveRecord::AttributeMethods" do
     end
 
     it "should not be present in the #attributes call" do
-      pending
       @model.attributes.should_not include('_private_attribute')
-      @model.attributes.should include('_private_attribute')
+      @model.attributes.should include('public_attribute')
+    end
+
+    it "should be present when using a class method to access #attributes" do
+      @model.get_attributes.should include('_private_attribute')
     end
   end
 
