@@ -1,0 +1,74 @@
+h1. AttrPrivate
+
+Please escuse the spelling, ecin will fix this... :)
+
+AttrPrivate adds the attr_private method to active record models.  This is a tool which is meant to be used to help programmers working in teams write protective code.
+
+I looked at a few solutions out there and wasn't quite satisfied with anything.  ggoodale/attr_private on github was the closest if you want to take a look.
+
+h2. Advancing AttrPrivate 
+
+Currently I am trying to decide which of 3 solutions would be best.
+
+h3. Modify Attribute Methods
+
+The most obvious one would be to edit all of the attribute_methods accessors to take into account the private_attributes.  Currently this is how rails handles protected_attributes so I would try to use a similar model.
+
+*pros*
+* Best solution and won't accidently break anything
+*cons*
+* Would take much more time then already spent
+* Not worth it unless people are really interested
+
+h3. Use Private Keyword with _ for ActiveRecord
+
+This way is the simplest to implement but results in some ugly code and requires the user to modify the database when changing between private and non private accessors.  Basically you prefix the name of the field with a _.  You then use attr_private :field to specify a private attribute.  You get getters and setters for field= and field, which are declared as private and can only be used inside the model.  Outside the model you can still use _field to set it directly.
+
+*pros*
+* Easiest to implement and doesn't seem that hackish
+* Gives real private functionality but still lets ActiveRecord modify the values
+*cons*
+* Without overiding all the accessors it is possible to view the private attributes from functions like attributes and read_attribute(:_field)
+* for some reason when using the setter you must use self.field =, and when using the getter you must use field.  field=, and self.field will produce errors.  I have not figured out why this is.
+* Still gives public access for bypassing the security using _field.  The point of this library is to not have an accidental way of setting a field you arn't supposed to.  However the _ may be enough that the programmer would look further into it before using it.
+* Allot of the code ends up having things like if attribute == "_#{field}" since ActiveRecord only knows the _field version.
+* Would require allot of work to do things like removing private attributes from the attributes method.  If needed would probably be just as easy to go to method 1
+
+h3. Use caller to Decide if Access is Allowed
+
+This way involves parsing the caller arguments to see if it is comming from a file that is allowed access.  It figures out which files are allowed access via a code generator which only works on unix machines.  The code generator is run before the app is started and requires that rails be frozen for the app.
+
+*pros*
+* Gets rid of the nececity for keeping track of _ methods.
+* Easy to restrict more functions without changing allot of code.
+*cons*
+* allow_private_access? is not verry robust.  Deciding if something deserves access is really figured out on a trial and error bases as tests are written.
+* adds allot of splits, on to each assignment operation that uses the allow_private_access.
+
+So basically after writing this, to me I feel like, if people are interested but do not like the allow_private_access (I don't either) then I should go to method 1 since method 2 would require just about as much work but still cause the private attributes to have a different field name then accessed in the model.
+
+h1. Example
+
+bc.. class Model < ActiveRecord::Base
+  attr_private :private_attribute
+  # Inside the model you can set private_attribute directly
+  def set_private_attribute(attr)
+    self.private_attribute = attr
+  end
+
+  # Inside the model you can get private_attribute directly
+  def get_private_attribute(attr)
+    self.get_private_attribute
+  end
+end
+
+# Outside the model you must use getters/setters to access the private methods
+model = Model.new
+model.private_attribute = "test" # => NoMethodError, private method `private_attribute=' called for #<Model:0xffffff>
+model.private_attribute          # => NoMethodError, private method `private_attribute' called for #<Model:0xffffff>
+
+model.set_private_attribute('test') # => 'test'
+model.get_private_attirbute         # => 'test'
+ 
+p.
+Copyright (c) 2009 copypastel.com, released under the MIT license
