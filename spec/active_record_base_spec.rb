@@ -83,12 +83,12 @@ describe "ActiveRecord::AttributeMethods" do
     end
 
     it "should not be present in the #attributes call" do
-      @model.attributes.should_not include('_private_attribute')
+      @model.attributes.should_not include('private_attribute')
       @model.attributes.should include('public_attribute')
     end
 
     it "should be present when using a class method to access #attributes" do
-      @model.get_attributes.should include('_private_attribute')
+      @model.get_attributes.should include('private_attribute')
     end
   end
 
@@ -131,7 +131,7 @@ describe "ActiveRecord::AttributeMethods" do
     it "should not be affected by mass updates" do
       attribute = "hello"
       @model.get_private_attribute.should be(nil)
-      @model.update_attributes!(:_private_attribute => attribute, :public_attribute => attribute)
+      @model.update_attributes!(:private_attribute => attribute, :public_attribute => attribute)
       @model.get_private_attribute.should be(nil)
       @model.public_attribute.should eql(attribute)
     end

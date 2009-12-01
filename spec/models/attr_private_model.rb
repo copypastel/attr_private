@@ -6,7 +6,7 @@ class AttrPrivateModel < ActiveRecord::Base
   end
 
   def get_private_attribute
-    private_attribute
+    self.private_attribute
   end
 
   def get_attributes
