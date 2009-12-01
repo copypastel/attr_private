@@ -106,6 +106,21 @@ describe "ActiveRecord::AttributeMethods" do
       @model.set_private_attribute(attribute)
       @model.get_read_attribute(:private_attribute).should eql(attribute)
     end
+
+    it "should return nil when trying to use #read_attribute_before_type_cast with a private attribute" do
+      attribute = "hello"
+      @model.set_private_attribute(attribute)
+      @model.public_attribute = attribute
+      @model.read_attribute_before_type_cast('private_attribute').should be(nil)
+      @model.public_attribute.should eql(attribute)
+      @model.read_attribute_before_type_cast('public_attribute').should eql(attribute)
+    end
+
+    it "should return the value when trying to use #read_attribute_before_type_cast from within the model" do
+      attribute = "hello"
+      @model.set_private_attribute(attribute)
+      @model.get_read_attribute_before_type_cast('private_attribute').should eql(attribute)
+    end
       
   end
 

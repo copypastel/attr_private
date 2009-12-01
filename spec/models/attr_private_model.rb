@@ -16,5 +16,9 @@ class AttrPrivateModel < ActiveRecord::Base
   def get_read_attribute(attr)
     self.read_attribute(attr)
   end
+
+  def get_read_attribute_before_type_cast(attr)
+    self.read_attribute_before_type_cast(attr)
+  end
 end
 
