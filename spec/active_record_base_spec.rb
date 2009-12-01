@@ -83,13 +83,23 @@ describe "ActiveRecord::AttributeMethods" do
     end
 
     it "should not be present in the #attributes call" do
+      attribute = "hello"
+      @model.set_private_attribute(attribute)
+      @model.public_attribute = attribute
       @model.attributes.should_not include('private_attribute')
       @model.attributes.should include('public_attribute')
+      @model.attributes['private_attribute'].should be(nil)
+      @model.attributes['public_attribute'].should eql(attribute)
     end
 
     it "should be present when using a class method to access #attributes" do
+      attribute = "hello"
+      @model.set_private_attribute(attribute)
+      @model.public_attribute = attribute
       @model.get_attributes.should include('private_attribute')
-      @model.get_attributes.should include('private_attribute')
+      @model.get_attributes.should include('public_attribute')
+      @model.get_attributes['private_attribute'].should eql(attribute)
+      @model.get_attributes['public_attribute'].should eql(attribute)
     end
 
     it "should return nil when trying to use #read_attribute with a private attribute" do
@@ -112,7 +122,6 @@ describe "ActiveRecord::AttributeMethods" do
       @model.set_private_attribute(attribute)
       @model.public_attribute = attribute
       @model.read_attribute_before_type_cast('private_attribute').should be(nil)
-      @model.public_attribute.should eql(attribute)
       @model.read_attribute_before_type_cast('public_attribute').should eql(attribute)
     end
 
@@ -121,6 +130,27 @@ describe "ActiveRecord::AttributeMethods" do
       @model.set_private_attribute(attribute)
       @model.get_read_attribute_before_type_cast('private_attribute').should eql(attribute)
     end
+
+    it "should not have private attirubets present in #attributes_before_type_cast" do
+      attribute = "hello"
+      @model.set_private_attribute(attribute)
+      @model.public_attribute = attribute
+      @model.attributes_before_type_cast.should_not include('private_attribute')
+      @model.attributes_before_type_cast.should include('public_attribute')
+      @model.attributes_before_type_cast['private_attribute'].should be(nil)
+      @model.attributes_before_type_cast['public_attribute'].should eql(attribute)
+    end
+
+    it "should have private attributes present in #attributes_before_type_cast from within model" do
+      attribute = "hello"
+      @model.set_private_attribute(attribute)
+      @model.public_attribute = attribute
+      @model.get_attributes_before_type_cast.should include('private_attribute')
+      @model.get_attributes_before_type_cast.should include('public_attribute')
+      @model.get_attributes_before_type_cast['private_attribute'].should eql(attribute)
+      @model.get_attributes_before_type_cast['public_attribute'].should eql(attribute)
+    end
+
       
   end
 

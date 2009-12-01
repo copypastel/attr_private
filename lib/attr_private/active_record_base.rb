@@ -31,12 +31,26 @@ module ActiveRecord
     alias old_attributes attributes
     def attributes
       attrs = old_attributes
-      self.class.private_attributes.each do |attr|
-        attrs.reject! { |key,value| key == attr }
-      end unless allow_private_access?
+      reject_private_attributes!(attrs) unless allow_private_access?
       attrs
     end
-    
+
+    alias old_attributes_before_type_cast attributes_before_type_cast
+    def attributes_before_type_cast
+      attrs = old_attributes_before_type_cast
+      reject_private_attributes!(attrs) unless allow_private_access?
+      attrs
+    end
+      
+    private
+    def reject_private_attributes!(attrs)
+      self.class.private_attributes.each do |attr|
+        attrs.reject! { |key,value| key.to_s == attr.to_s }
+      end 
+      attrs
+    end
+
+
     def allow_private_access?
       # Check to see if the second caller (because the first would be the method that called this function)
       # was invoked from within the allowable PRIVATE_ACCESSORS list
