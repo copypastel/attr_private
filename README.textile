@@ -2,7 +2,7 @@ h1. AttrPrivate
 
 Please escuse the spelling, ecin will fix this... :)
 
-AttrPrivate adds the attr_private method to active record models.  This is a tool which is meant to be used to help programmers working in teams write protective code.
+AttrPrivate adds the attr_private method to active record models.  This is a tool which is meant to be used to help programmers working in teams write defensive code.
 
 I looked at a few solutions out there and wasn't quite satisfied with anything.  ggoodale/attr_private on github was the closest if you want to take a look.
 
