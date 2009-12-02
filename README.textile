@@ -60,8 +60,8 @@ bc.. class Model < ActiveRecord::Base
   end
 
   # Inside the model you can get private_attribute directly
-  def get_private_attribute(attr)
-    self.get_private_attribute
+  def get_private_attribute
+    self.private_attribute
   end
 end
 
