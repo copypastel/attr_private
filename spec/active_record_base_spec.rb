@@ -52,7 +52,8 @@ describe "ActiveRecord::Base" do
       Model.protected_attributes.should include('second_attr')
       Model.protected_attributes.should include('third_attr')
     end
-  end
+
+      end
 
   describe "#private_attributes" do
     it "should respond to #private_attributes" do
@@ -71,6 +72,7 @@ end
 describe "ActiveRecord::AttributeMethods" do
   before(:all) do
    autoload :AttrPrivateModel, File.dirname(__FILE__) + '/models/attr_private_model' 
+   autoload :AttrPublicModel, File.dirname(__FILE__) + '/models/attr_public_model'
   end
   
   before(:each) do
@@ -189,6 +191,14 @@ describe "ActiveRecord::AttributeMethods" do
       model = AttrPrivateModel.find @model.id
       @model.public_attribute.should eql(model.public_attribute) 
     end
+
+    it "should not affect models with no private attributes" do
+      attribute = "hello"
+      model = AttrPublicModel.new
+      model.public_attribute = attribute
+      model.public_attribute.should eql(attribute)
+    end
+
 
     it "should save and retrieve a private attribute" do
       attribute = "hello"

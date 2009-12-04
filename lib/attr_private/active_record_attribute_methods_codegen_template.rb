@@ -19,7 +19,7 @@ module ActiveRecord
     module ClassMethods
       def define_write_method(attr_name)
         method = "def #{attr_name}=(new_value);write_attribute('#{attr_name}', new_value);end"
-        if private_attributes.include?(attr_name.to_s)
+        if not private_attributes.nil? and private_attributes.include?(attr_name.to_s)
           method = <<-EOS
             def #{attr_name}=(new_value)
               raise NoMethodError, "private method `#{attr_name}' called for #{self}" unless allow_private_access?
@@ -42,7 +42,7 @@ module ActiveRecord
           access_code = "@attributes_cache['#{attr_name}'] ||= (#{access_code})"
         end
         method = "def #{symbol}; #{access_code}; end"
-        if private_attributes.include?(attr_name)
+        if not private_attributes.nil? and private_attributes.include?(attr_name)
           method = <<-EOS
             def #{attr_name}
               raise NoMethodError, "private method `#{attr_name}' called for #{self}" unless allow_private_access?
