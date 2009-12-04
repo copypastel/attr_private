@@ -27,6 +27,7 @@ module ActiveRecord
 
     private
     def reject_private_attributes!(attrs)
+      return attrs if self.class.private_attributes.nil?
       self.class.private_attributes.each do |attr|
         attrs.reject! { |key,value| key.to_s == attr.to_s }
       end 

@@ -197,6 +197,7 @@ describe "ActiveRecord::AttributeMethods" do
       model = AttrPublicModel.new
       model.public_attribute = attribute
       model.public_attribute.should eql(attribute)
+      lambda { model.attributes }.should_not raise_error(NoMethodError)
     end
 
 
